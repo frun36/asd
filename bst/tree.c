@@ -6,6 +6,7 @@ Tree new_tree() {
 
 void free_branch(Node* x) {
     if(x) {
+        printf("%p %d %p %p\n", x->parent, x->key, x->left, x->right);
         if(x->parent) {
             if(x == x->parent->left) {
                 x->parent->left = NULL;
@@ -44,20 +45,19 @@ void postorder_tree_walk(Node* x) {
     }
 }
 
-void tree_transplant(Tree* tree, Node* u, Node* v) {
-    if(u->parent == NULL) {
-        tree->root = v;
+void tree_transplant(Tree* tree, Node* dest, Node* src) {
+    if(dest->parent == NULL) {
+        tree->root = src;
     }
-    else if(u == u->parent->left) {
-        u->parent->left = v;
+    else if(dest == dest->parent->left) {
+        dest->parent->left = src;
     }
     else {
-        u->parent->right = v;
+        dest->parent->right = src;
     }
-    if(v) {
-        v->parent = u->parent;
+    if(src) {
+        src->parent = dest->parent;
     }
-    free_branch(u);
 }
 
 Tree example(void) {

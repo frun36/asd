@@ -44,4 +44,3 @@ void inorder_tree_walk(Node*);
 void postorder_tree_walk(Node*);
 void tree_transplant(Tree*, Node*, Node*);
 void free_branch(Node*);
-

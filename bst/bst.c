@@ -15,15 +15,21 @@ int is_bst(Node*, int, int);
 int main(void) {
     // Tree tree = example();
     Tree tree = new_tree();
-    bst_insert(&tree, 6);
-    bst_insert(&tree, 5);
-    bst_insert(&tree, 2);
-    bst_insert(&tree, 5);
-    bst_insert(&tree, 7);
-    bst_insert(&tree, 8);
+    int keys[] = {8, 3, 10, 1, 6, 14, 4, 7, 13};
+
+    for(size_t i = 0; i < sizeof(keys)/sizeof(int); i++) {
+        bst_insert(&tree, keys[i]);
+    }
+
+    // bst_insert(&tree, 6);
+    // bst_insert(&tree, 5);
+    // bst_insert(&tree, 2);
+    // bst_insert(&tree, 5);
+    // bst_insert(&tree, 7);
+    // bst_insert(&tree, 8);
     inorder_print(tree);
     printf("%d\n", is_bst(tree.root, 0, 100));
-    bst_delete(&tree, tree.root->right);
+    bst_delete(&tree, tree.root->right->right->left);
     inorder_print(tree);
     printf("%d\n", is_bst(tree.root, 0, 100));
 
@@ -121,21 +127,26 @@ void bst_insert(Tree* tree, int key) {
 void bst_delete(Tree* tree, Node* z) {
     if(z->left == NULL) {
         tree_transplant(tree, z, z->right);
+        z->right = NULL;
+        free(z);
     }
     else if(z->right == NULL) {
         tree_transplant(tree, z, z->left);
+        free(z);
     }
     else {
-        Node *y = bst_minimum(z);
+        Node *y = bst_minimum(z->right);
         if(y->parent != z) {
-            y->parent->left = y->right;
-            y->right->parent = y->parent;
+            tree_transplant(tree, y, y->right);
             y->right = z->right;
+            z->right->parent = y;
         }
         z->right = NULL;
         y->left = z->left;
+        z->left->parent = y;
         z->left = NULL;
         tree_transplant(tree, z, y);
+        free(z);
     }
 }
 
