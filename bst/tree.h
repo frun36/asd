@@ -25,12 +25,14 @@
 #define MIN(x, y) ((x) > (y) ? (y) : (x))
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
 
+enum Color { BLACK, RED };
 
 typedef struct _Node {
     int key;
     struct _Node* parent;
     struct _Node* left;
     struct _Node* right;
+    enum Color color;
 } Node;
 
 typedef struct _Tree {

@@ -11,6 +11,8 @@ Node *bst_predecessor(Node*);
 void bst_insert(Tree*, int);
 void bst_delete(Tree*, Node*);
 int is_bst(Node*, int, int);
+void left_rotate(Tree*, Node*);
+void right_rotate(Tree*, Node*);
 
 int main(void) {
     // Tree tree = example();
@@ -27,16 +29,21 @@ int main(void) {
     // bst_insert(&tree, 5);
     // bst_insert(&tree, 7);
     // bst_insert(&tree, 8);
-    inorder_print(tree);
+    preorder_print(tree);
     printf("%d\n", is_bst(tree.root, 0, 100));
+
     bst_delete(&tree, tree.root->right->right->left);
-    inorder_print(tree);
+    preorder_print(tree);
+    printf("%d\n", is_bst(tree.root, 0, 100));
+    
+    right_rotate(&tree, tree.root->left);
+    preorder_print(tree);
     printf("%d\n", is_bst(tree.root, 0, 100));
 
-    // Node *predecessor = bst_predecessor(tree.root->left->left);
-    // Node *successor = bst_successor(tree.root->left->left);
+    left_rotate(&tree, tree.root->left);
+    preorder_print(tree);
+    printf("%d\n", is_bst(tree.root, 0, 100));
 
-    // printf("%3d%3d%3d\n", predecessor ? predecessor->key : -1, tree.root->left->left->key, successor ? successor->key : -1); 
     free_tree(tree);
 
     return 0;
@@ -163,4 +170,58 @@ int is_bst(Node* x, int min, int max) {
         b = is_bst(x->right, MAX(x->key, min), max);
     }
     return a && b;
+}
+
+void left_rotate(Tree* tree, Node* x) {
+    Node *y = x->right;
+    if(y == NULL) {
+        fprintf(stderr, "Couldn't perform rotation: right child of x is NULL.\n");
+        return;
+    }
+    
+    y->parent = x->parent;
+    if(x->parent == NULL) {
+        tree->root = y;
+    }
+    else if(x == x->parent->left) {
+        x->parent->left = y;
+    }
+    else {
+        x->parent->right = y;
+    }
+    
+    x->right = y->left;
+    if(x->right) {
+        x->right->parent = x;
+    }
+
+    y->left = x;
+    x->parent = y;
+}
+
+void right_rotate(Tree* tree, Node* x) {
+    Node *y = x->left;
+    if(y == NULL) {
+        fprintf(stderr, "Couldn't perform rotation: left child of x is NULL.\n");
+        return;
+    }
+
+    y->parent = x->parent;
+    if(x->parent == NULL) {
+        tree->root = y;
+    }
+    else if(x == x->parent->left) {
+        x->parent->left = y;
+    }
+    else {
+        x->parent->right = y;
+    }
+
+    x->left = y->right;
+    if(x->left) {
+        x->left->parent = x;
+    }
+
+    y->right = x;
+    x->parent = y;
 }
