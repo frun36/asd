@@ -8,11 +8,13 @@ Node *bst_minimum(Node*);
 Node *bst_maximum(Node*);
 Node *bst_successor(Node*);
 Node *bst_predecessor(Node*);
-void bst_insert(Tree*, int);
+Node *bst_insert(Tree*, int);
 void bst_delete(Tree*, Node*);
 int is_bst(Node*, int, int);
 void left_rotate(Tree*, Node*);
 void right_rotate(Tree*, Node*);
+void rb_insert(Tree*, int);
+void rb_insert_fixup(Tree*, Node*);
 
 int main(void) {
     // Tree tree = example();
@@ -20,7 +22,8 @@ int main(void) {
     int keys[] = {8, 3, 10, 1, 6, 14, 4, 7, 13};
 
     for(size_t i = 0; i < sizeof(keys)/sizeof(int); i++) {
-        bst_insert(&tree, keys[i]);
+        rb_insert(&tree, keys[i]);
+        printf("Allocated node %lu\n", i);
     }
 
     // bst_insert(&tree, 6);
@@ -32,7 +35,7 @@ int main(void) {
     preorder_print(tree);
     printf("%d\n", is_bst(tree.root, 0, 100));
 
-    bst_delete(&tree, tree.root->right->right->left);
+    bst_delete(&tree, tree.root->right->right);
     preorder_print(tree);
     printf("%d\n", is_bst(tree.root, 0, 100));
     
@@ -98,7 +101,7 @@ Node *bst_predecessor(Node* x) {
     return y;
 }
 
-void bst_insert(Tree* tree, int key) {
+Node *bst_insert(Tree* tree, int key) {
     Node *x = tree->root;
 
     Node *z = malloc(sizeof(Node));
@@ -106,6 +109,7 @@ void bst_insert(Tree* tree, int key) {
     z->parent = NULL;
     z->left = NULL;
     z->right = NULL;
+    z->color = BLACK;
 
     Node* y = NULL;
     while(x) {
@@ -129,9 +133,13 @@ void bst_insert(Tree* tree, int key) {
             y->right = z;
         }
     }
+    return z;
 }
 
 void bst_delete(Tree* tree, Node* z) {
+    if(z == NULL) {
+        return;
+    }
     if(z->left == NULL) {
         tree_transplant(tree, z, z->right);
         z->right = NULL;
@@ -224,4 +232,53 @@ void right_rotate(Tree* tree, Node* x) {
 
     y->right = x;
     x->parent = y;
+}
+
+void rb_insert(Tree* tree, int key) {
+    Node *z = bst_insert(tree, key);
+    z->color = RED;
+    rb_insert_fixup(tree, z);
+}
+
+void rb_insert_fixup(Tree* tree, Node* z) {
+    Node *y;
+    while(z->parent && z->parent->color == RED) {
+        if(z->parent == z->parent->parent->left) {
+            y = z->parent->parent->right;
+            if(y && y->color == RED) {
+                z->parent->color = BLACK;
+                y->color = BLACK;
+                z->parent->parent->color = RED;
+                z = z->parent->parent;
+            }
+            else {
+                if(z == z->parent->right) {
+                    z = z->parent;
+                    left_rotate(tree, z);
+                }
+                z->parent->color = BLACK;
+                z->parent->parent->color = RED;
+                right_rotate(tree, z->parent->parent);
+            }
+        }
+        else {
+            y = z->parent->parent->left;
+            if(y && y->color == RED) {
+                z->parent->color = BLACK;
+                y->color = BLACK;
+                z->parent->parent->color = RED;
+                z = z->parent->parent;
+            }
+            else {
+                if(z == z->parent->left) {
+                    z = z->parent;
+                    right_rotate(tree, z);
+                }
+                z->parent->color = BLACK;
+                z->parent->parent->color = RED;
+                left_rotate(tree, z->parent->parent);
+            }
+        }
+    }
+    tree->root->color = BLACK;
 }

@@ -23,15 +23,20 @@ void free_branch(Node* x) {
 
 void preorder_tree_walk(Node* x) {
     if(x) {
+        rb_color(x);
         printf("%3d", x->key);
         preorder_tree_walk(x->left);
         preorder_tree_walk(x->right);
+    } else {
+        color_black;
+        printf("  -");
     }
 }
 
 void inorder_tree_walk(Node* x) {
     if(x) {
         inorder_tree_walk(x->left);
+        rb_color(x);
         printf("%3d", x->key);
         inorder_tree_walk(x->right);
     }
@@ -41,6 +46,7 @@ void postorder_tree_walk(Node* x) {
     if(x) {
         postorder_tree_walk(x->left);
         postorder_tree_walk(x->right);
+        rb_color(x);
         printf("%3d", x->key);
     }
 }

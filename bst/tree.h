@@ -7,19 +7,34 @@
     tree.root = NULL; \
 }
 
+#define color_white printf("\033[0;37m")
+#define color_black printf("\033[0;30m")
+#define color_red printf("\033[0;31m")
+
 #define preorder_print(tree) {\
     preorder_tree_walk(tree.root); \
+    color_white; \
     printf("\n"); \
 }
 
 #define inorder_print(tree) {\
     inorder_tree_walk(tree.root); \
+    color_white; \
     printf("\n"); \
 }
 
 #define postorder_print(tree) {\
     postorder_tree_walk(tree.root); \
+    color_white; \
     printf("\n"); \
+}
+
+#define rb_color(x) {\
+    if(x->color == RED) {\
+        color_red;\
+    } else {\
+        color_black;\
+    }\
 }
 
 #define MIN(x, y) ((x) > (y) ? (y) : (x))
