@@ -1,6 +1,4 @@
 #include "directed.h"
-#include "priority_queue.h"
-
 
 //Matrix representation
 
@@ -160,7 +158,15 @@ void dgl_free(DiGraphList** graph) {
 //     for(size_t i = 0; i < graph->order; i++) {
 //         if(i != source) {
 //             graph->vertices[i].color = WHITE;
-//             graph->vertices[i].predecessor = 
+//             graph->vertices[i].distance = -1; // overflow on purpose
+//             graph->vertices[i].predecessor = NULL;
 //         }
 //     }
+//     graph->vertices[source].color = GRAY;
+//     graph->vertices[source].distance = 0;
+//     graph->vertices[source].predecessor = NULL;
+    
+//     PQNode *pq = pq_allocate(graph->order);
+//     size_t heap_size = 0;
+//     pq_insert(pq, &heap_size, )
 // }

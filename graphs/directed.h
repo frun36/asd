@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "fifo.h"
 #include "list.h"
 
 #define get_index(order, u, v) ((u) * (order) + (v))
@@ -23,11 +24,13 @@ void dgm_free(DiGraphMatrix **);
 
 // List representation
 
-enum Color { BLACK, GRAY, WHITE };
+enum Color { BLACK,
+             GRAY,
+             WHITE };
 
 typedef struct _Vertex {
     enum Color color;
-    struct _Vertex* predecessor;
+    struct _Vertex *predecessor;
     unsigned distance;
     unsigned d;
     unsigned f;
