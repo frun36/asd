@@ -8,6 +8,8 @@
 
 #define get_index(order, u, v) ((u) * (order) + (v))
 
+// Matrix representation
+
 typedef struct _DiGraphMatrix {
     size_t order;
     int edges[];
@@ -19,15 +21,27 @@ void dgm_remove_edge(DiGraphMatrix *, size_t, size_t);
 void dgm_print(DiGraphMatrix *);
 void dgm_free(DiGraphMatrix **);
 
+// List representation
+
+enum Color { BLACK, GRAY, WHITE };
+
+typedef struct _Vertex {
+    enum Color color;
+    struct _Vertex* predecessor;
+    unsigned distance;
+    unsigned d;
+    unsigned f;
+    List *adj;
+} Vertex;
+
 typedef struct _DiGraphList {
     size_t order;
-    List adj[];
+    Vertex vertices[];
 } DiGraphList;
 
 DiGraphList *dgl_init(size_t);
-
-void print_size_t_data(void *);
-int size_t_cmp(void *, void *);
+void print_vertex_data(void *);
+int vertex_cmp(void *, void *);
 void dgl_add_edge(DiGraphList *, size_t, size_t);
 void dgl_remove_edge(DiGraphList *, size_t, size_t);
 void dgl_print(DiGraphList *);

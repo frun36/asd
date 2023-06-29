@@ -1,4 +1,5 @@
 #include "directed.h"
+#include "priority_queue.h"
 
 
 //Matrix representation
@@ -70,13 +71,11 @@ void dgm_free(DiGraphMatrix** graph) {
 
 // List representation
 
-void print_size_t_data(void* data) {
-    printf("Data: %lu\n", *(size_t*)data);
+void print_vertex_data(void* data) {
+    printf("Data: %p\n", data);
 }
 
-int size_t_cmp(void* _a, void* _b) {
-    size_t a = *(size_t*)_a;
-    size_t b = *(size_t*)_b;
+int vertex_cmp(void* a, void* b) {
     if (a < b) {
         return -1;
     }
@@ -87,49 +86,48 @@ int size_t_cmp(void* _a, void* _b) {
 }
 
 DiGraphList* dgl_init(size_t order) {
-    DiGraphList* graph = malloc(sizeof(DiGraphMatrix) + order * order * sizeof(List));
+    DiGraphList* graph = malloc(sizeof(DiGraphList) + order * order * sizeof(Vertex));
     graph->order = order;
     for (size_t i = 0; i < order; i++) {
-        graph->adj[i] = list_init();
+        graph->vertices[i].adj = malloc(sizeof(List));
+        *graph->vertices[i].adj = list_init();
     }
     return graph;
 }
 
 void dgl_add_edge(DiGraphList* graph, size_t u, size_t v) {
     if (u >= graph->order) {
-        fprintf(stderr, "Couldn't add edge: vertex %lu not in graph\n", u);
+        fprintf(stderr, "Couldn't add edge (%lu, %lu): vertex %lu not in graph\n", u, v, u);
         return;
     }
     if (v >= graph->order) {
-        fprintf(stderr, "Couldn't add edge: vertex %lu not in graph\n", v);
+        fprintf(stderr, "Couldn't add edge (%lu, %lu): vertex %lu not in graph\n", u, v, v);
         return;
     }
-    if (list_find(&graph->adj[u], &v, size_t_cmp)) {
-        fprintf(stderr, "Couldn't add edge: edge already exists\n");
+    if (list_find(graph->vertices[u].adj, &graph->vertices[v], vertex_cmp)) {
+        fprintf(stderr, "Couldn't add edge (%lu, %lu): edge already exists\n", u, v);
         return;
     }
-    size_t* data = malloc(sizeof(size_t));
-    *data = v;
-    list_add_end(&graph->adj[u], data);
-    printf("Successfully added edge: (%lu, %lu)\n", u, v);
+    list_add_end(graph->vertices[u].adj, &graph->vertices[v]);
+    printf("Successfully added edge (%lu, %lu)\n", u, v);
 }
 
 void dgl_remove_edge(DiGraphList* graph, size_t u, size_t v) {
     if (u >= graph->order) {
-        fprintf(stderr, "Couldn't remove edge: vertex %lu not in graph\n", u);
+        fprintf(stderr, "Couldn't remove edge (%lu, %lu): vertex %lu not in graph\n", u, v, u);
         return;
     }
     if (v >= graph->order) {
-        fprintf(stderr, "Couldn't remove edge: vertex %lu not in graph\n", v);
+        fprintf(stderr, "Couldn't remove edge (%lu, %lu): vertex %lu not in graph\n", u, v, v);
         return;
     }
-    Node* edge = list_find(&graph->adj[u], &v, size_t_cmp);
+    Node* edge = list_find(graph->vertices[u].adj, &graph->vertices[v], vertex_cmp);
     if (!edge) {
-        fprintf(stderr, "Couldn't remove edge: edge doesn't exist\n");
+        fprintf(stderr, "Couldn't remove edge (%lu, %lu): edge doesn't exist\n", u, v);
         return;
     }
-    list_remove(&graph->adj[u], edge, free);
-    printf("Successfully removed edge: (%lu, %lu)\n", u, v);
+    list_remove(graph->vertices[u].adj, edge, NULL);
+    printf("Successfully removed edge (%lu, %lu)\n", u, v);
 }
 
 void dgl_print(DiGraphList* graph) {
@@ -141,7 +139,7 @@ void dgl_print(DiGraphList* graph) {
     for (size_t i = 0; i < graph->order; i++) {
         printf("%3lu", i);
         for (size_t j = 0; j < graph->order; j++) {
-            printf("%3d", list_find(&graph->adj[i], &j, size_t_cmp) ? 1 : 0);
+            printf("%3d", list_find(graph->vertices[i].adj, &graph->vertices[j], vertex_cmp) ? 1 : 0);
         }
         printf("\n");
     }
@@ -150,9 +148,19 @@ void dgl_print(DiGraphList* graph) {
 void dgl_free(DiGraphList** graph) {
     if (graph && *graph) {
         for (size_t i = 0; i < (*graph)->order; i++) {
-            list_clear(&(*graph)->adj[i], free);
+            list_clear((*graph)->vertices[i].adj, NULL);
+            free((*graph)->vertices[i].adj);
         }
         free(*graph);
     }
     *graph = NULL;
 }
+
+// void bfs(DiGraphList *graph, size_t source) {
+//     for(size_t i = 0; i < graph->order; i++) {
+//         if(i != source) {
+//             graph->vertices[i].color = WHITE;
+//             graph->vertices[i].predecessor = 
+//         }
+//     }
+// }

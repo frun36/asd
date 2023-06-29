@@ -50,19 +50,3 @@ int main(void) {
     }
     return 0;
 }
-
-void print_int_data(void *data) {
-    printf("Data: %d\n", *(int *)data);
-}
-
-int int_cmp(void *_a, void *_b) {
-    int a = *(int *)_a;
-    int b = *(int *)_b;
-    if (a < b) {
-        return -1;
-    }
-    if (a > b) {
-        return 1;
-    }
-    return 0;
-}
