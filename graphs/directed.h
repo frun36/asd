@@ -29,6 +29,7 @@ enum Color { BLACK,
              WHITE };
 
 typedef struct _Vertex {
+    size_t index;
     enum Color color;
     struct _Vertex *predecessor;
     unsigned distance;
@@ -48,6 +49,7 @@ int vertex_cmp(void *, void *);
 void dgl_add_edge(DiGraphList *, size_t, size_t);
 void dgl_remove_edge(DiGraphList *, size_t, size_t);
 void dgl_print(DiGraphList *);
+void bfs(DiGraphList *, size_t);
 void dgl_free(DiGraphList **);
 
 #endif
