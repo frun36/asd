@@ -63,7 +63,7 @@ int main(void) {
         // dgl_add_edge(graph, 5, 6);
         // dgl_add_edge(graph, 2, 3);
         // dgl_add_edge(graph, 6, 7);
-        dgl_add_edge(graph, 0, 1);
+        dgl_add_edge(graph, 1, 0);
         dgl_add_edge(graph, 0, 2);
         dgl_add_edge(graph, 0, 3);
         dgl_add_edge(graph, 0, 4);
@@ -73,7 +73,7 @@ int main(void) {
         
         dgl_print(graph);
 
-        bfs(graph, 0);
+        dfs(graph);
         dgl_free(&graph);
     }
 

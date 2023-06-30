@@ -50,6 +50,8 @@ void dgl_add_edge(DiGraphList *, size_t, size_t);
 void dgl_remove_edge(DiGraphList *, size_t, size_t);
 void dgl_print(DiGraphList *);
 void bfs(DiGraphList *, size_t);
+void dfs(DiGraphList *);
+void dfs_visit(Vertex *, unsigned *);
 void dgl_free(DiGraphList **);
 
 #endif

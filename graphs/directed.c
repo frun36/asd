@@ -1,6 +1,6 @@
 #include "directed.h"
 
-//Matrix representation
+// Matrix representation
 
 DiGraphMatrix* dgm_init(size_t order) {
     DiGraphMatrix* graph = calloc(
@@ -69,10 +69,10 @@ void dgm_free(DiGraphMatrix** graph) {
 
 // List representation
 
-void print_vertex_data(void *v) {
-    Vertex *vertex = v;
-    if(v) {
-        printf("\nIndex: %lu\nColor: %d\nDistance: %u\n", vertex->index, vertex->color, vertex->distance);
+void print_vertex_data(void* v) {
+    Vertex* vertex = v;
+    if (v) {
+        printf("\nIndex: %lu\nColor: %d\nDistance: %u\nd: %u\nf: %d\n", vertex->index, vertex->color, vertex->distance, vertex->d, vertex->f);
     } else {
         printf(".\n");
     }
@@ -160,12 +160,12 @@ void dgl_free(DiGraphList** graph) {
     *graph = NULL;
 }
 
-void bfs(DiGraphList *graph, size_t source) {
+void bfs(DiGraphList* graph, size_t source) {
     size_t indices[graph->order];
-    for(size_t i = 0; i < graph->order; i++) {
-        if(i != source) {
+    for (size_t i = 0; i < graph->order; i++) {
+        if (i != source) {
             graph->vertices[i].color = WHITE;
-            graph->vertices[i].distance = -1; // overflow on purpose
+            graph->vertices[i].distance = -1;  // overflow on purpose
             graph->vertices[i].predecessor = NULL;
         }
         indices[i] = i;
@@ -173,17 +173,17 @@ void bfs(DiGraphList *graph, size_t source) {
     graph->vertices[source].color = GRAY;
     graph->vertices[source].distance = 0;
     graph->vertices[source].predecessor = NULL;
-    
-    Fifo *fifo = fifo_init(graph->order - 1);
-    fifo_enqueue(fifo, indices+source);
-    while(fifo->queue[fifo->begin]) {
+
+    Fifo* fifo = fifo_init(graph->order - 1);
+    fifo_enqueue(fifo, indices + source);
+    while (fifo->queue[fifo->begin]) {
         fifo_print(fifo, print_vertex_data);
-        size_t curr_index = *(size_t *)fifo_dequeue(fifo);
-        Vertex *curr = &graph->vertices[curr_index];
-        Node *neighbor = curr->adj->head;
-        while(neighbor) {
-            Vertex *neighbor_vertex = neighbor->data;
-            if(neighbor_vertex->color == WHITE) {
+        size_t curr_index = *(size_t*)fifo_dequeue(fifo);
+        Vertex* curr = &graph->vertices[curr_index];
+        Node* neighbor = curr->adj->head;
+        while (neighbor) {
+            Vertex* neighbor_vertex = neighbor->data;
+            if (neighbor_vertex->color == WHITE) {
                 neighbor_vertex->color = GRAY;
                 neighbor_vertex->distance = curr->distance + 1;
                 neighbor_vertex->predecessor = curr;
@@ -193,12 +193,48 @@ void bfs(DiGraphList *graph, size_t source) {
         }
         curr->color = BLACK;
         printf("Visited vertex %lu\n", curr_index);
-        
     }
 
     // test
     printf("\nFinished\n");
-    for(size_t i = 0; i < graph->order; i++) {
+    for (size_t i = 0; i < graph->order; i++) {
         print_vertex_data(&graph->vertices[i]);
     }
+}
+
+void dfs(DiGraphList* graph) {
+    for (size_t i = 0; i < graph->order; i++) {
+        graph->vertices[i].color = WHITE;
+        graph->vertices[i].predecessor = NULL;
+    }
+    unsigned time = 0;
+    for (size_t i = 0; i < graph->order; i++) {
+        if (graph->vertices[i].color == WHITE) {
+            dfs_visit(&graph->vertices[i], &time);
+        }
+    }
+
+    // test
+    printf("\nFinished\n");
+    for (size_t i = 0; i < graph->order; i++) {
+        print_vertex_data(&graph->vertices[i]);
+    }
+}
+
+void dfs_visit(Vertex* curr, unsigned* time) {
+    curr->color = GRAY;
+    ++*time;
+    curr->d = *time;
+    Node* neighbor = curr->adj->head;
+    while (neighbor) {
+        Vertex* neighbor_vertex = neighbor->data;
+        if (neighbor_vertex->color == WHITE) {
+            neighbor_vertex->predecessor = curr;
+            dfs_visit(neighbor_vertex, time);
+        }
+        neighbor = neighbor->next;
+    }
+    curr->color = BLACK;
+    ++*time;
+    curr->f = *time;
 }
