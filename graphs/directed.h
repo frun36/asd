@@ -52,6 +52,8 @@ void dgl_print(DiGraphList *);
 void bfs(DiGraphList *, size_t);
 void dfs(DiGraphList *);
 void dfs_visit(Vertex *, unsigned *);
+void topological_sort(DiGraphList *);
+void topological_sort_visit(Vertex *, unsigned *, List *);
 void dgl_free(DiGraphList **);
 
 #endif

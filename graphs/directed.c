@@ -238,3 +238,39 @@ void dfs_visit(Vertex* curr, unsigned* time) {
     ++*time;
     curr->f = *time;
 }
+
+void topological_sort(DiGraphList* graph) {
+    List sorted_vertices = list_init();
+    for (size_t i = 0; i < graph->order; i++) {
+        graph->vertices[i].color = WHITE;
+        graph->vertices[i].predecessor = NULL;
+    }
+    unsigned time = 0;
+    for (size_t i = 0; i < graph->order; i++) {
+        if (graph->vertices[i].color == WHITE) {
+            topological_sort_visit(&graph->vertices[i], &time, &sorted_vertices);
+        }
+    }
+
+    list_print(&sorted_vertices, print_vertex_data);
+    list_clear(&sorted_vertices, NULL);
+}
+
+void topological_sort_visit(Vertex* curr, unsigned* time, List* sorted_vertices) {
+    curr->color = GRAY;
+    ++*time;
+    curr->d = *time;
+    Node* neighbor = curr->adj->head;
+    while (neighbor) {
+        Vertex* neighbor_vertex = neighbor->data;
+        if (neighbor_vertex->color == WHITE) {
+            neighbor_vertex->predecessor = curr;
+            topological_sort_visit(neighbor_vertex, time, sorted_vertices);
+        }
+        neighbor = neighbor->next;
+    }
+    curr->color = BLACK;
+    ++*time;
+    curr->f = *time;
+    list_add_begin(sorted_vertices, curr);
+}

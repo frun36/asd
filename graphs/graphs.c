@@ -70,10 +70,10 @@ int main(void) {
         dgl_add_edge(graph, 0, 5);
         dgl_add_edge(graph, 0, 6);
         dgl_add_edge(graph, 0, 7);
-        
+
         dgl_print(graph);
 
-        dfs(graph);
+        topological_sort(graph);
         dgl_free(&graph);
     }
 
